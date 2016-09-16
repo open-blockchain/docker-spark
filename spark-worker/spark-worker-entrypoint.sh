@@ -1,16 +1,18 @@
 #!/bin/bash
 set -e
 
-export SPARK_VERSION=1.6.1
+export SPARK_VERSION=2.0.0
 export SPARK_HOME=/opt/spark-$SPARK_VERSION
 
-for c in `printenv | perl -sne 'print "$1 " if m/^SPARK_CONF_(.+?)=.*/'`; do 
+/entrypoint.sh
+
+for c in `printenv | perl -sne 'print "$1 " if m/^SPARK_CONF_(.+?)=.*/'`; do
     name=`echo ${c} | perl -pe 's/___/-/g; s/__/_/g; s/_/./g'`
     var="SPARK_CONF_${c}"
     value=${!var}
     echo "Setting SPARK property $name=$value"
     echo $name $value >> $SPARK_HOME/conf/spark-defaults.conf
-done 
+done
 
 if [ -z "$SPARK_MASTER_URL" ]; then
   echo "Spark master URL not specified"
